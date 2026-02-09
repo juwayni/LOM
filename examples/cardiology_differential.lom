@@ -1,0 +1,40 @@
+--- PATIENT CONTEXT: PC_CARD ---
+Age: 55
+Sex: Male
+RiskFactors: Hypertension, Smoking
+
+--- OBSERVATION: OBS_CHEST_PAIN ---
+Status: observed
+Description: "Crushing substernal chest pain"
+Onset: 30 mins ago
+Justification: J_HISTORY
+
+--- MEASUREMENT: MEAS_EKG ---
+Label: "EKG"
+Value: 1
+Unit: "Binary"
+Range: 0-0
+Status: observed
+Uncertainty: "Expert interpretation"
+
+--- ASSERTION: AS_AMI ---
+Claim: "Acute Myocardial Infarction"
+Status: hypothesized
+Supports: OBS_CHEST_PAIN, MEAS_EKG
+Justification: J_AMI_GUIDELINE
+
+--- ASSERTION: AS_GERD ---
+Claim: "Gastroesophageal Reflux Disease"
+Status: hypothesized
+Supports: OBS_CHEST_PAIN
+Contradicts: MEAS_EKG
+Justification: J_GERD_PRINCIPLE
+
+--- JUSTIFICATION: J_HISTORY ---
+Source: "Physician interview"
+
+--- JUSTIFICATION: J_AMI_GUIDELINE ---
+Source: "AHA/ACC STEMI Guidelines"
+
+--- JUSTIFICATION: J_GERD_PRINCIPLE ---
+Source: "Clinical Differential Reasoning"

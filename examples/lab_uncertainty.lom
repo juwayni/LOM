@@ -1,0 +1,20 @@
+--- PATIENT CONTEXT: PC_LAB ---
+Age: 40
+Sex: Female
+
+--- MEASUREMENT: MEAS_TSH ---
+Label: "Thyroid Stimulating Hormone"
+Value: 4.8
+Unit: "mIU/L"
+Range: 0.4-4.0
+Status: hypothesized
+Uncertainty: "+/- 0.5 (Analytical variation)"
+
+--- ASSERTION: AS_SUBCLINICAL_HYPO ---
+Claim: "Subclinical Hypothyroidism"
+Status: inferred
+Supports: MEAS_TSH
+Justification: J_THYROID_GUIDELINE
+
+--- JUSTIFICATION: J_THYROID_GUIDELINE ---
+Source: "ETA Guidelines"

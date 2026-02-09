@@ -1,0 +1,30 @@
+--- PATIENT CONTEXT: PC_01 ---
+Age: 30
+Sex: Female
+
+--- OBSERVATION: OBS_01 ---
+Status: observed
+Description: "Mild cough"
+Justification: J_01
+
+--- MEASUREMENT: MEAS_01 ---
+Label: "Body Temperature"
+Value: 38.5
+Unit: "Celsius"
+Range: 36.5-37.5
+Status: observed
+Uncertainty: "+/- 0.1"
+
+--- ASSERTION: AS_01 ---
+Claim: "Fever"
+Status: inferred
+Supports: MEAS_01
+Justification: J_02
+
+--- JUSTIFICATION: J_01 ---
+Source: "Patient intake form"
+Type: "Evidence"
+
+--- JUSTIFICATION: J_02 ---
+Source: "Standard clinical definition of fever"
+Type: "Principle"

@@ -1,0 +1,22 @@
+--- PATIENT CONTEXT: PC_PREG ---
+Age: 28
+Sex: Female
+Pregnancy: confirmed
+
+--- OBSERVATION: OBS_FEVER ---
+Status: observed
+Description: "High fever"
+
+--- CONSTRAINT: CON_NSAIDS ---
+Rule: "Pregnancy: confirmed"
+Target: "Ibuprofen"
+Action: Block
+
+--- ASSERTION: AS_TX_PLAN ---
+Claim: "Use Ibuprofen for fever"
+Status: hypothesized
+Supports: OBS_FEVER
+Justification: J_GENERAL_TX
+
+--- JUSTIFICATION: J_GENERAL_TX ---
+Source: "Common practice"
