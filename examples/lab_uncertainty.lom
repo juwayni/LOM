@@ -7,7 +7,7 @@ Label: "Thyroid Stimulating Hormone"
 Value: 4.8
 Unit: "mIU/L"
 Range: "0.4-4.0"
-EpistemicState: Medium|GradeB|Universal
+EpistemicState: Low|GradeB|Universal
 
 --- ASSERTION: AS_SUBCLINICAL_HYPO ---
 Claim: "Subclinical Hypothyroidism"

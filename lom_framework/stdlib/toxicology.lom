@@ -1,0 +1,20 @@
+--- JUSTIFICATION: J_BEERS_2023 ---
+Source: "American Geriatrics Society Beers Criteria for Potentially Inappropriate Medication Use in Older Adults"
+Strength: High|GradeA|Universal
+---
+--- CONSTRAINT: CON_TOX_NSAID_CKD ---
+Rule: "eGFR < 30"
+Target: "NSAIDs"
+Action: "AVOID"
+Justification: J_BEERS_2023
+---
+--- CONSTRAINT: CON_TOX_APAP_LIVER ---
+Rule: "Chronic Liver Disease"
+Target: "Acetaminophen > 2g/day"
+Action: "LIMIT"
+---
+--- CONSTRAINT: CON_TOX_WARFARIN_NSAIDS ---
+Rule: "Current Medication: Warfarin"
+Target: "NSAIDs"
+Action: "HIGH_BLEED_RISK"
+---

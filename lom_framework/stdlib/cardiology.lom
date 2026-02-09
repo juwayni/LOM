@@ -1,0 +1,23 @@
+--- JUSTIFICATION: J_STEMI_2024 ---
+Source: "AHA/ACC Clinical Practice Guidelines for ST-Elevation Myocardial Infarction"
+Strength: High|GradeA|Universal
+---
+--- JUSTIFICATION: J_CHADS2VASC ---
+Source: "ESC Guidelines for Atrial Fibrillation Management"
+Strength: High|GradeA|Universal
+---
+--- CONSTRAINT: CON_ACS_ASA ---
+Rule: "Active Gastrointestinal Bleed"
+Target: "Aspirin"
+Action: "CONTRAINDICATED"
+---
+--- CONSTRAINT: CON_ACS_NTG ---
+Rule: "Systolic BP < 90"
+Target: "Nitroglycerin"
+Action: "CONTRAINDICATED"
+---
+--- ASSERTION: AS_STEMI_CRITERIA ---
+Claim: "ST-Elevation >= 1mm in 2 contiguous leads"
+Status: inferred
+Justification: J_STEMI_2024
+---
