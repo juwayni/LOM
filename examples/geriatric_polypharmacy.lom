@@ -1,0 +1,37 @@
+--- PATIENT CONTEXT: PC_GERI ---
+Age: 85
+Sex: Female
+Conditions: "Atrial Fibrillation, Gastrointestinal Bleeding"
+Anticoagulation: "Warfarin"
+
+--- CONSTRAINT: CON_BLEED_RISK ---
+Rule: "Gastrointestinal Bleeding"
+Target: "Ibuprofen"
+Justification: J_BEERS_CRITERIA
+
+--- CONSTRAINT: CON_WARFARIN_INTERACTION ---
+Rule: "Warfarin"
+Target: "Ibuprofen"
+Justification: J_DRUG_INTERACTION
+
+--- OBSERVATION: OBS_PAIN ---
+Description: "Severe osteoarthritic knee pain"
+Status: observed
+
+--- ASSERTION: AS_NSAID_TRIAL ---
+Claim: "Prescribe Ibuprofen for pain management"
+Supports: OBS_PAIN
+Justification: J_PRACTICE_STD
+
+--- JUSTIFICATION: J_BEERS_CRITERIA ---
+Source: "American Geriatrics Society Beers Criteria"
+Strength: High|GradeA|Universal
+
+--- JUSTIFICATION: J_DRUG_INTERACTION ---
+Source: "Pharmacopoeia Database"
+Strength: High|GradeA|Universal
+
+--- JUSTIFICATION: J_PRACTICE_STD ---
+Source: "General practice standard"
+Strength: Medium|GradeC|Majority
+---

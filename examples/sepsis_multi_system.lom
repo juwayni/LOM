@@ -1,0 +1,49 @@
+--- PATIENT CONTEXT: PC_SEPSIS ---
+Age: 72
+Sex: Male
+Comorbidities: "Diabetes Mellitus Type 2, Chronic Kidney Disease"
+Metadata: "Post-op Day 2 (Appendectomy)"
+
+--- TEMPORAL CONTEXT: T_NOW ---
+Timestamp: 202310271400
+
+--- OBSERVATION: OBS_MENTAL ---
+Description: "Altered mental status, confusion"
+Timestamp: 202310271330
+EpistemicState: High|GradeA|Universal
+
+--- MEASUREMENT: MEAS_BP ---
+Label: "Mean Arterial Pressure"
+Value: 58
+Unit: "mmHg"
+Range: 70-100
+Timestamp: 202310271345
+EpistemicState: High|GradeA|Universal
+
+--- BIOMARKER: BIO_LACTATE ---
+Label: "Serum Lactate"
+Value: 4.2
+Unit: "mmol/L"
+Range: 0.5-2.2
+Timestamp: 202310271350
+EpistemicState: High|GradeA|Universal
+
+--- PHYSIOLOGICAL PROCESS: PP_SIRS ---
+Process: "Systemic Inflammatory Response"
+Supports: OBS_MENTAL, MEAS_BP
+Justification: J_SIRS_CRITERIA
+
+--- ASSERTION: AS_SEPTIC_SHOCK ---
+Claim: "Septic Shock"
+Supports: PP_SIRS, MEAS_BP, BIO_LACTATE
+Justification: J_SURVIVING_SEPSIS
+Timestamp: 202310271400
+
+--- JUSTIFICATION: J_SIRS_CRITERIA ---
+Source: "Sepsis-3 Definitions"
+Strength: High|GradeA|Universal
+
+--- JUSTIFICATION: J_SURVIVING_SEPSIS ---
+Source: "Surviving Sepsis Campaign Guidelines 2021"
+Strength: High|GradeA|Universal
+---

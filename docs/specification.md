@@ -1,98 +1,65 @@
-# LoM Formal Language Specification
+# LoM Formal Specification (Version 2.0)
 
-## 1. Syntax Overview
-LoM uses a block-based, declarative syntax. Each block represents a primitive and is separated by triple-dashes and a header.
+## 1. Formal Grammar (EBNF)
 
-### 1.1 Grammar (Human-Readable)
+```ebnf
+LoMDocument    = { Block } ;
+Block          = Header , NL , FieldList , NL , [ "---" ] ;
+Header         = "--- " , BlockType , ": " , ID , " ---" ;
+BlockType      = "PATIENT CONTEXT" | "TEMPORAL CONTEXT" | "OBSERVATION"
+               | "MEASUREMENT" | "BIOMARKER" | "PHYSIOLOGICAL PROCESS"
+               | "INTERVENTION" | "ASSERTION" | "JUSTIFICATION"
+               | "CONSTRAINT" | "OUTCOME" ;
 
-```
-Document      ::= Block+
-Block         ::= ContextBlock | ObservationBlock | MeasurementBlock | AssertionBlock | ConstraintBlock | JustificationBlock
+FieldList      = { Field , NL } ;
+Field          = Key , ": " , Value ;
+Key            = [A-Z][a-zA-Z0-9]* ;
+Value          = String | Number | List | TemporalExpr | EpistemicState ;
 
-ContextBlock  ::= "--- PATIENT CONTEXT: " ID " ---" NL FieldMap
-ObservationBlock ::= "--- OBSERVATION: " ID " ---" NL FieldMap
-MeasurementBlock ::= "--- MEASUREMENT: " ID " ---" NL FieldMap
-AssertionBlock   ::= "--- ASSERTION: " ID " ---" NL FieldMap
-ConstraintBlock  ::= "--- CONSTRAINT: " ID " ---" NL FieldMap
-JustificationBlock ::= "--- JUSTIFICATION: " ID " ---" NL FieldMap
+List           = ID , { "," , ID } ;
+TemporalExpr   = "at(" , Time , ")" | "during(" , ID , ")" | "relative(" , ID , "," , Delta , ")" ;
+EpistemicState = Reliability , "|" , EvidenceStrength , "|" , Consensus ;
+Reliability    = "High" | "Medium" | "Low" | "Unreliable" ;
+EvidenceStrength = "GradeA" | "GradeB" | "GradeC" | "GradeD" ;
+Consensus      = "Universal" | "Majority" | "Disputed" ;
 
-FieldMap      ::= (Key ": " Value NL)+
-Key           ::= [A-Za-z]+
-Value         ::= String | Number | List | EpistemicStatus
-List          ::= ID (", " ID)*
-EpistemicStatus ::= "observed" | "inferred" | "hypothesized" | "excluded" | "unresolved" | "unknowable"
-```
-
-## 2. Constructs and Semantics
-
-### 2.1 Patient Context
-Defines the state of the patient at the start of the reasoning process.
-- **Fields**: Age, Sex, Pregnancy Status, Comorbidities, History.
-- **Semantics**: Values are treated as `observed` by default.
-
-### 2.2 Observation
-Qualitative empirical data.
-- **Fields**: Status, Description, Onset, Justification.
-- **Semantics**: Represents what the clinician or patient sees/feels.
-
-### 2.3 Measurement
-Quantitative empirical data.
-- **Fields**: Label, Value, Unit, Range, Status, Uncertainty.
-- **Semantics**: `Range` defines the reference interval. If `Value` is outside `Range`, it triggers a "Value Out of Range" flag in the execution model. `Uncertainty` must be declared if known.
-
-### 2.4 Assertion
-A step in the reasoning chain.
-- **Fields**: Claim, Status, Supports, Contradicts, Justification.
-- **Semantics**:
-    - `Supports` lists IDs of blocks that provide evidence for the claim.
-    - `Contradicts` lists IDs of blocks that argue against the claim.
-    - An assertion with status `inferred` MUST have at least one supporting block.
-    - If a contradiction is present, the status should typically be `unresolved` or `excluded` unless the justification explains how to weigh the conflicting evidence.
-
-### 2.5 Justification
-Provenance and rationale.
-- **Fields**: Source, Type (Guideline/Evidence/Principle), Strength.
-- **Semantics**: Provides the authority for an assertion or observation.
-
-### 2.6 Constraint
-Safety barriers.
-- **Fields**: Rule, Target, Action (Block/Warn).
-- **Semantics**: If `Target` meets `Rule`, the `Action` is triggered. Usually used to prevent unsafe inferences (e.g., "If Pregnancy is True, exclude Ibuprofen recommendation").
-
-## 3. Native Construct Examples
-
-### Patient Context
-```
---- PATIENT CONTEXT: PC_001 ---
-Age: 62
-Sex: Male
-Smoking: 30 pack-years
+ID             = [a-zA-Z0-9_]+ ;
+String         = '"' , { any_character } , '"' ;
+Number         = [ "-" ] , digits , [ "." , digits ] ;
+Time           = digits ; (* ISO8601 or Relative T-scale *)
+NL             = "\n" ;
 ```
 
-### Observation
-```
---- OBSERVATION: OBS_01 ---
-Status: observed
-Description: "Shortness of breath on exertion"
-Justification: J_01
-```
+## 2. Formal Semantics
 
-### Measurement
-```
---- MEASUREMENT: MEAS_01 ---
-Label: "Heart Rate"
-Value: 110
-Unit: "bpm"
-Range: 60-100
-Status: observed
-Uncertainty: "+/- 5 bpm"
-```
+LoM reasoning is interpreted as a **Justified Knowledge Graph (JKG)**.
 
-### Assertion
-```
---- ASSERTION: AS_01 ---
-Claim: "Tachycardia"
-Status: inferred
-Supports: MEAS_01
-Justification: J_02
-```
+### 2.1 Assertion Semantics
+An assertion $A$ is valid if and only if:
+$$\exists J \in \text{Justifications}, \exists S \subseteq (\text{Observations} \cup \text{Measurements} \cup \text{Assertions})$$
+$$\text{Supports}(A, S) \land \text{Justifies}(J, A, S) \land \nexists C \in \text{Constraints} : \text{Violates}(A, C)$$
+
+### 2.2 Uncertainty Propagation
+Let $\mathcal{U}(n)$ be the uncertainty vector of node $n$.
+For an inferred assertion $A$ from premises $P = \{p_1, \dots, p_n\}$:
+$$\mathcal{U}(A) = \min(\mathcal{U}(p_1), \dots, \mathcal{U}(p_n), \text{Strength}(\text{Justification}(A)))$$
+*Note: LoM uses a lattice-based min-operator across dimensions.*
+
+### 2.3 Temporal Consistency
+A reasoning chain $C = \{b_1, \dots, b_k\}$ is temporally consistent if:
+$$\forall (b_i, b_j) \in C, \text{precedes}(b_i, b_j) \implies \text{Timestamp}(b_i) \leq \text{Timestamp}(b_j)$$
+
+### 2.4 Constraint Enforcement
+A constraint $C$ with rule $R$ and target $T$:
+$$\forall b \in \text{Blocks}, \text{matches}(b, T) \land \text{eval}(R, \text{State}) = \text{True} \implies \text{Forbidden}(b)$$
+
+## 3. Advanced Semantics of Mechanistic Primitives
+
+### 3.1 Physiological Process
+Models a state change over time.
+- $P(t_1, t_2) \implies \text{Effect}(P)$ is active during $[t_1, t_2]$.
+- Assertions linked to $P$ must respect the interval $[t_1, t_2]$.
+
+### 3.2 Intervention (Drug)
+- Requires `Dose`, `Route`, and `Indication`.
+- Triggers `Interaction` checks against `PatientContext` and other `Interventions`.
